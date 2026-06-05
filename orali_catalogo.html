@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Precios · ORALI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ee;
+    --surface: #ffffff;
+    --accent: #c8412a;
+    --accent2: #e8a020;
+    --text: #1a1410;
+    --muted: #7a6e65;
+    --border: #e0d8d0;
+    --tag-bg: #f0ebe4;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--text);
+    color: white;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .brand-logo {
+    width: 44px;
+    height: 44px;
+    background: var(--accent);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    color: white;
+    letter-spacing: 1px;
+  }
+
+  .brand-name {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 3px;
+    color: white;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: -4px;
+  }
+
+  .header-meta {
+    text-align: right;
+  }
+
+  .header-date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .header-count {
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    padding: 12px 24px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,0.04);
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+  }
+
+  .search-wrap svg {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 10px 12px 10px 38px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input::placeholder { color: rgba(255,255,255,0.3); }
+  .search-input:focus { border-color: var(--accent); }
+
+  .filter-select {
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .filter-select:focus { border-color: var(--accent); }
+  .filter-select option { background: #1a1410; color: white; }
+
+  .sort-btn {
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .sort-btn:hover, .sort-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* MAIN */
+  main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .stat-pill strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .stat-pill .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  /* CATEGORIES */
+  .category-section {
+    margin-bottom: 32px;
+  }
+
+  .category-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .category-icon {
+    font-size: 20px;
+  }
+
+  .category-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+
+  .category-badge {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  /* PRODUCT GRID */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .product-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+  }
+
+  .product-card.hidden { display: none; }
+
+  .product-info { flex: 1; min-width: 0; }
+
+  .product-code {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .product-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.35;
+    word-break: break-word;
+  }
+
+  .product-price-wrap {
+    text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .product-currency {
+    font-size: 10px;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .product-price {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    display: none;
+  }
+
+  .empty-state.visible { display: block; }
+
+  .empty-state svg {
+    opacity: 0.2;
+    margin-bottom: 16px;
+  }
+
+  .empty-state h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+
+  /* HIGHLIGHT */
+  .hl { background: #fff3cd; border-radius: 2px; padding: 0 2px; }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    .header-top { padding: 12px 16px; }
+    .toolbar { padding: 10px 16px; gap: 8px; }
+    main { padding: 16px 12px 60px; }
+    .product-grid { grid-template-columns: 1fr; }
+    .brand-name { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <div class="brand-logo">OR</div>
+      <div>
+        <div class="brand-name">ORALI</div>
+        <div class="brand-sub">Lista de Precios</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="header-date">Actualizado: 28/05/2026</div>
+      <div class="header-count" id="visibleCount">90 productos</div>
+    </div>
+  </div>
+  <div class="toolbar">
+    <div class="search-wrap">
+      <svg width="16" height="16" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input class="search-input" id="searchInput" type="text" placeholder="Buscar producto o código...">
+    </div>
+    <select class="filter-select" id="categoryFilter">
+      <option value="">Todas las categorías</option>
+      <option value="capeletis">Capeletis</option>
+      <option value="empanadas">Empanadas</option>
+      <option value="fideos">Fideos</option>
+      <option value="miel">Miel / Levadura</option>
+      <option value="noquis">Ñoquis</option>
+      <option value="tortillas">Tortillas</option>
+      <option value="pascualina">Pascualinas</option>
+      <option value="pionono">Pionono</option>
+      <option value="ravioles">Ravioles</option>
+      <option value="sorrentinos">Sorrentinos</option>
+      <option value="sustituto">Sustitutos</option>
+      <option value="tapas">Tapas</option>
+      <option value="tubos">Tubos</option>
+    </select>
+    <button class="sort-btn" id="sortBtn" onclick="toggleSort()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 6h18M7 12h10M11 18h2"/>
+      </svg>
+      <span id="sortLabel">Menor precio</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-pill"><span class="dot"></span><strong>90</strong> productos</div>
+    <div class="stat-pill">Precios en <strong>ARS</strong></div>
+    <div class="stat-pill">Proveedor: <strong>ORALI</strong></div>
+  </div>
+
+  <div id="productsContainer"></div>
+  <div class="empty-state" id="emptyState">
+    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <h3>Sin resultados</h3>
+    <p>Probá con otro término o categoría</p>
+  </div>
+</main>
+
+<footer>Lista vigente al 28/05/2026 · Precios en pesos argentinos · Sujetos a cambios sin previo aviso</footer>
+
+<script>
+const PRODUCTS = [
+  // CAPELETIS
+  {code:"350114", name:"Capeletis Carne x500g", price:3075.60, cat:"capeletis"},
+  {code:"350132", name:"Capeletis Jamón/Queso x500g Premium", price:3515.16, cat:"capeletis"},
+  // EMPANADAS
+  {code:"350766", name:"Empanadas Cong. c/Berenjena x6u", price:5587.03, cat:"empanadas"},
+  {code:"350764", name:"Empanadas Cong. c/Calabaza x6u", price:5587.03, cat:"empanadas"},
+  {code:"350765", name:"Empanadas Cong. c/Humita x6u", price:5587.03, cat:"empanadas"},
+  {code:"350763", name:"Empanadas Cong. c/Lentejas x6u", price:5587.03, cat:"empanadas"},
+  {code:"350762", name:"Empanadas Cong. c/Vegetales x6u", price:5587.03, cat:"empanadas"},
+  {code:"350761", name:"Empanadas Cong. Textu. Soja Picante x6u", price:5587.03, cat:"empanadas"},
+  {code:"350760", name:"Empanadas Cong. Textu. Soja x6u", price:5587.03, cat:"empanadas"},
+  // FIDEOS
+  {code:"35042", name:"Fideos Ancho Fettuccini x500g", price:2236.08, cat:"fideos"},
+  {code:"350189", name:"Fideos Fettuccini Med. x500g Premium", price:2673.00, cat:"fideos"},
+  {code:"35040", name:"Fideos Fino Fettuccini x500g", price:2236.08, cat:"fideos"},
+  {code:"350106", name:"Fideos LV Integrales x500g", price:3319.80, cat:"fideos"},
+  {code:"35041", name:"Fideos Med. Fettuccini x500g", price:2236.08, cat:"fideos"},
+  // MIEL / LEVADURA
+  {code:"351103", name:"Levadura Fresca x500g", price:3853.08, cat:"miel"},
+  {code:"350412", name:"Miel Cremosa OPT x500g", price:6489.12, cat:"miel"},
+  {code:"350411", name:"Miel Líquida OPT x500g", price:6489.12, cat:"miel"},
+  // ÑOQUIS
+  {code:"350504", name:"Ñoquis LV Har. Integral/Chía x500g", price:3319.80, cat:"noquis"},
+  {code:"350767", name:"Ñoquis Sin TACC x500g Espinaca (Cong.)", price:7418.40, cat:"noquis"},
+  {code:"350768", name:"Ñoquis Sin TACC x500g Papa (Cong.)", price:7418.40, cat:"noquis"},
+  {code:"350111", name:"Ñoquis x1kg", price:4708.44, cat:"noquis"},
+  {code:"350112", name:"Ñoquis x500g", price:2473.68, cat:"noquis"},
+  // TORTILLAS
+  {code:"350535", name:"Tortillas Trigo Sarrac./Zanahoria x6u x220g", price:2328.48, cat:"tortillas"},
+  {code:"350536", name:"Tortillas Trigo/Arvejas x6u x220g", price:2328.48, cat:"tortillas"},
+  {code:"350537", name:"Tortillas Trigo/Avena x6u x220g", price:2328.48, cat:"tortillas"},
+  {code:"350529", name:"Tortillas Cheddar x6u x220g", price:1622.28, cat:"tortillas"},
+  {code:"350522", name:"Tortillas Clásica x6u x220g", price:1622.28, cat:"tortillas"},
+  {code:"350534", name:"Tortillas Espinaca x6u x220g", price:1622.28, cat:"tortillas"},
+  {code:"350521", name:"Tortillas Integral x6u x220g", price:1622.28, cat:"tortillas"},
+  {code:"350530", name:"Tortillas Pizza x6u x220g", price:1622.28, cat:"tortillas"},
+  // PASCUALINA
+  {code:"350320", name:"Pascualina Criolla 2u x500g Premium", price:2535.72, cat:"pascualina"},
+  {code:"350321", name:"Pascualina Hojaldre 2u x500g Premium", price:2774.43, cat:"pascualina"},
+  {code:"350186", name:"Pascualina 22cm x230g Línea Verde", price:4245.12, cat:"pascualina"},
+  {code:"350188", name:"Pascualina Criolla 35cm 2u x500g", price:3488.76, cat:"pascualina"},
+  {code:"350301", name:"Pascualina Criolla 2u x380g", price:2018.28, cat:"pascualina"},
+  {code:"350202", name:"Pascualina Hojaldre 22cm 2u (230g)", price:2853.23, cat:"pascualina"},
+  {code:"350302", name:"Pascualina Hojaldre 2u x400g", price:2018.28, cat:"pascualina"},
+  {code:"35251", name:"Pascualina Línea Verde (LV) 2u x500g", price:3355.44, cat:"pascualina"},
+  {code:"350528", name:"Pascualina Sin TACC 2u x380g", price:3125.76, cat:"pascualina"},
+  // PIONONO
+  {code:"81080", name:"Pionono x180g", price:2968.68, cat:"pionono"},
+  // RAVIOLES
+  {code:"350187", name:"Ravioles 4 Quesos x500g", price:2332.44, cat:"ravioles"},
+  {code:"350128", name:"Ravioles Calabaza 454g Premium", price:2904.00, cat:"ravioles"},
+  {code:"350126", name:"Ravioles Carne/Verdura x500g", price:2332.44, cat:"ravioles"},
+  {code:"350127", name:"Ravioles Espinaca/Ricota 454g Premium", price:2904.00, cat:"ravioles"},
+  {code:"350525", name:"Ravioles LV Calabaza y Tofu x500g", price:3946.80, cat:"ravioles"},
+  {code:"35255", name:"Ravioles LV Espinaca x500g", price:3946.80, cat:"ravioles"},
+  {code:"350527", name:"Ravioles LV Remolacha y Tofu x500g", price:3946.80, cat:"ravioles"},
+  {code:"35253", name:"Ravioles LV Soja x500g", price:3946.80, cat:"ravioles"},
+  {code:"350123", name:"Ravioles Pollo x500g", price:2332.44, cat:"ravioles"},
+  {code:"350190", name:"Ravioles Ricota x455g Premium", price:2904.00, cat:"ravioles"},
+  {code:"350124", name:"Ravioles Ricota x500g", price:2332.44, cat:"ravioles"},
+  {code:"350125", name:"Ravioles Verdura x500g", price:2332.44, cat:"ravioles"},
+  {code:"350256", name:"Ravioles x1kg 4 Quesos", price:4420.68, cat:"ravioles"},
+  {code:"35083", name:"Ravioles x1kg Carne/Verdura", price:4420.68, cat:"ravioles"},
+  {code:"35080", name:"Ravioles x1kg Pollo", price:4420.68, cat:"ravioles"},
+  {code:"35081", name:"Ravioles x1kg Ricota", price:4420.68, cat:"ravioles"},
+  {code:"35082", name:"Ravioles x1kg Verdura", price:4420.68, cat:"ravioles"},
+  // SORRENTINOS
+  {code:"35047", name:"Sorrentinos 4 Quesos x500g", price:2741.64, cat:"sorrentinos"},
+  {code:"35046", name:"Sorrentinos Calabaza/Muzza x500g", price:3140.28, cat:"sorrentinos"},
+  {code:"35045", name:"Sorrentinos Ricota/Espinaca x500g", price:2741.64, cat:"sorrentinos"},
+  // SUSTITUTOS
+  {code:"350182", name:"Sustituto Carne x100g", price:1174.07, cat:"sustituto"},
+  {code:"350184", name:"Sustituto Carne x1kg", price:8030.88, cat:"sustituto"},
+  {code:"350523", name:"Sustituto Carne x250g", price:2060.52, cat:"sustituto"},
+  {code:"350185", name:"Sustituto Pollo x1kg", price:8030.88, cat:"sustituto"},
+  {code:"350524", name:"Sustituto Pollo x250g", price:2060.52, cat:"sustituto"},
+  // TAPAS
+  {code:"350313", name:"Tapa Copetín Criolla x12u x165g", price:1240.80, cat:"tapas"},
+  {code:"350311", name:"Tapa Copetín Hojaldre x12u 190g", price:1354.32, cat:"tapas"},
+  {code:"350307", name:"Tapa Emp. Criolla x12u x420g Premium", price:2241.36, cat:"tapas"},
+  {code:"350203", name:"Tapa Emp. Criolla x15u x375g", price:1914.00, cat:"tapas"},
+  {code:"350305", name:"Tapa Emp. Hojaldre x12u x330g Horno", price:1573.44, cat:"tapas"},
+  {code:"350308", name:"Tapa Emp. Hojaldre x12u x420g Premium", price:2241.36, cat:"tapas"},
+  {code:"350533", name:"Tapa Emp. Rotisera x12 S/TACC x460g", price:3453.12, cat:"tapas"},
+  {code:"350526", name:"Tapa Emp. Sin TACC x12u x330g", price:2605.68, cat:"tapas"},
+  {code:"350300", name:"Tapa Empanada Criolla x12u x330g", price:1573.44, cat:"tapas"},
+  {code:"350306", name:"Tapa Empanada Freír x12u x330g", price:1573.44, cat:"tapas"},
+  {code:"35250", name:"Tapa Empanadas x12u x420g LV Semillas", price:2881.56, cat:"tapas"},
+  {code:"35260", name:"Tapa Empanadas x12u x420g LV Semillas", price:2161.17, cat:"tapas"},
+  {code:"350310", name:"Tapa Pastelito Criolla x12u x165g", price:1240.80, cat:"tapas"},
+  {code:"350312", name:"Tapa Pastelito Hojaldre x12u x190g", price:1354.32, cat:"tapas"},
+  {code:"350201", name:"Tapa Rotisera Criolla x12u x625g", price:3013.56, cat:"tapas"},
+  {code:"350200", name:"Tapa Rotisera Hojaldre x12u x625g", price:3013.56, cat:"tapas"},
+  // TUBOS
+  {code:"350180", name:"Tubo L Hojaldre x4doc x1,8kg", price:8029.56, cat:"tubos"},
+  {code:"350108", name:"Tubo LF Criolla x4doc x1,8kg", price:8029.56, cat:"tubos"},
+  {code:"350110", name:"Tubo XL Criolla x3doc x1,8kg Alta Cocina", price:9156.84, cat:"tubos"},
+  {code:"350105", name:"Tubo XL Criolla x4doc", price:8991.84, cat:"tubos"},
+  {code:"350109", name:"Tubo XL Hojaldre x3doc x1,8kg Alta Cocina", price:9156.84, cat:"tubos"},
+  {code:"350107", name:"Tubo XL Hojaldre x4doc", price:8991.84, cat:"tubos"},
+];
+
+const CATEGORIES = {
+  capeletis:   { label: "Capeletis",          icon: "🥟" },
+  empanadas:   { label: "Empanadas",           icon: "🫔" },
+  fideos:      { label: "Fideos",              icon: "🍝" },
+  miel:        { label: "Miel & Levadura",     icon: "🍯" },
+  noquis:      { label: "Ñoquis",              icon: "🥔" },
+  tortillas:   { label: "Tortillas",           icon: "🌯" },
+  pascualina:  { label: "Pascualinas",         icon: "🥧" },
+  pionono:     { label: "Pionono",             icon: "🍰" },
+  ravioles:    { label: "Ravioles",            icon: "🍝" },
+  sorrentinos: { label: "Sorrentinos",         icon: "🥟" },
+  sustituto:   { label: "Sustitutos de Carne", icon: "🌿" },
+  tapas:       { label: "Tapas",               icon: "🫓" },
+  tubos:       { label: "Tubos",               icon: "📦" },
+};
+
+let sortAsc = true;
+let currentSearch = "";
+let currentCat = "";
+
+function fmt(n) {
+  return n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+
+function highlight(text, term) {
+  if (!term) return text;
+  const re = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<span class="hl">$1</span>');
+}
+
+function render() {
+  const container = document.getElementById('productsContainer');
+  const empty = document.getElementById('emptyState');
+  const countEl = document.getElementById('visibleCount');
+  container.innerHTML = '';
+
+  const term = currentSearch.toLowerCase();
+  const catFilter = currentCat;
+
+  let filtered = PRODUCTS.filter(p => {
+    const matchSearch = !term ||
+      p.name.toLowerCase().includes(term) ||
+      p.code.toLowerCase().includes(term);
+    const matchCat = !catFilter || p.cat === catFilter;
+    return matchSearch && matchCat;
+  });
+
+  if (sortAsc) {
+    filtered.sort((a,b) => a.price - b.price);
+  } else {
+    filtered.sort((a,b) => b.price - a.price);
+  }
+
+  if (filtered.length === 0) {
+    empty.classList.add('visible');
+    countEl.textContent = '0 productos';
+    return;
+  }
+
+  empty.classList.remove('visible');
+  countEl.textContent = filtered.length + ' producto' + (filtered.length !== 1 ? 's' : '');
+
+  // Group by category (respecting filter)
+  const groups = {};
+  filtered.forEach(p => {
+    if (!groups[p.cat]) groups[p.cat] = [];
+    groups[p.cat].push(p);
+  });
+
+  Object.keys(groups).forEach(cat => {
+    const info = CATEGORIES[cat];
+    const section = document.createElement('div');
+    section.className = 'category-section';
+
+    const header = document.createElement('div');
+    header.className = 'category-header';
+    header.innerHTML = `
+      <span class="category-icon">${info.icon}</span>
+      <span class="category-title">${info.label}</span>
+      <span class="category-badge">${groups[cat].length} items</span>
+    `;
+    section.appendChild(header);
+
+    const grid = document.createElement('div');
+    grid.className = 'product-grid';
+
+    groups[cat].forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'product-card';
+      card.innerHTML = `
+        <div class="product-info">
+          <div class="product-code">#${p.code}</div>
+          <div class="product-name">${highlight(p.name, currentSearch)}</div>
+        </div>
+        <div class="product-price-wrap">
+          <span class="product-currency">ARS $</span>
+          <span class="product-price">${fmt(p.price)}</span>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
+}
+
+function toggleSort() {
+  sortAsc = !sortAsc;
+  document.getElementById('sortLabel').textContent = sortAsc ? 'Menor precio' : 'Mayor precio';
+  document.getElementById('sortBtn').classList.toggle('active', !sortAsc);
+  render();
+}
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  currentSearch = e.target.value;
+  render();
+});
+
+document.getElementById('categoryFilter').addEventListener('change', e => {
+  currentCat = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
